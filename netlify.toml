@@ -1,0 +1,24 @@
+[build]
+  # Netlify detectará automáticamente que es un sitio estático
+  # No necesitas configuración especial de build
+  functions = "api"
+
+[build.environment]
+  # Variables de entorno que se usarán en el build
+  # Estas se configuran en el dashboard de Netlify
+  REMOVE_BG_API_KEY = ""
+
+# Configuración de headers para seguridad
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Configuración de redirects (opcional)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

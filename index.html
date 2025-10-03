@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuminaEdit - Removedor de Fondos y Textos con IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl@4.15.0/dist/tf-backend-webgl.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-black text-white min-h-screen overflow-x-hidden">
+    <!-- Fondo animado mejorado -->
+    <div class="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black z-0"></div>
+    <div class="particles-container fixed inset-0 z-0"></div>
+    <div class="grid-lines fixed inset-0 z-0 opacity-20"></div>
+    
+    <div class="relative z-10">
+        <!-- Encabezado mejorado -->
+        <header class="text-center pt-12 pb-8 px-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex items-center justify-center mb-6">
+                    <div class="w-16 h-16 bg-gradient-to-r from-yellow-400 to-yellow-300 rounded-2xl flex items-center justify-center mr-6 shadow-glow animate-pulse-glow">
+                        <i class="fas fa-magic text-black text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-6xl md:text-7xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-300 bg-clip-text text-transparent mb-2">
+                            LuminaEdit
+                        </h1>
+                        <div class="flex items-center justify-center space-x-2">
+                            <span class="px-3 py-1 bg-yellow-400 text-black text-sm font-bold rounded-full">IA 2025</span>
+                            <span class="px-3 py-1 bg-gray-800 text-yellow-400 text-sm font-medium rounded-full">WebGL Acelerado</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                    Potenciado por los últimos avances en IA para 2025. Eliminación inteligente de fondos y texto en cualquier tipo de imagen.
+                </p>
+            </div>
+        </header>
+
+        <!-- Indicador de carga de IA -->
+        <div id="cargando-ia" class="fixed top-4 right-4 bg-gray-900 border border-yellow-400 rounded-lg p-4 z-50 shadow-glow">
+            <div class="flex items-center space-x-3">
+                <div class="w-6 h-6 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+                <span class="text-yellow-400 font-medium">Inicializando IA...</span>
+            </div>
+        </div>
+
+        <!-- Tarjeta principal mejorada -->
+        <div class="max-w-7xl mx-auto px-4 pb-16">
+            <div class="bg-gray-900/80 backdrop-blur-lg rounded-3xl shadow-2xl border border-gray-800 overflow-hidden transform hover:scale-[1.005] transition-all duration-500">
+                <div class="p-8 md:p-12">
+                    <!-- Selector de imagen mejorado -->
+                    <div class="mb-12">
+                        <label class="block text-3xl font-bold text-yellow-400 mb-8 flex items-center">
+                            <i class="fas fa-cloud-upload-alt mr-4 text-yellow-300"></i>
+                            Carga Tu Imagen
+                        </label>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                            <!-- Cargar desde archivo -->
+                            <div class="relative group">
+                                <input type="file" id="input-imagen" accept="image/*" class="hidden">
+                                <button id="btn-cargar-imagen" class="w-full h-full bg-gray-800/50 hover:bg-gray-750 border-2 border-dashed border-gray-700 hover:border-yellow-400 rounded-2xl p-8 transition-all duration-300 group-hover:scale-105 group-hover:shadow-glow">
+                                    <div class="text-center">
+                                        <div class="w-20 h-20 bg-gradient-to-r from-yellow-400 to-yellow-300 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:animate-pulse">
+                                            <i class="fas fa-folder-open text-black text-3xl"></i>
+                                        </div>
+                                        <h3 class="text-2xl font-bold text-white mb-3">Subir Archivo</h3>
+                                        <p class="text-gray-400 text-lg">JPG, PNG, WebP, AVIF</p>
+                                        <p class="text-gray-500 text-sm mt-2">Hasta 10MB</p>
+                                    </div>
+                                </button>
+                            </div>
+                            
+                            <!-- Capturar desde cámara (solo móviles) -->
+                            <div class="relative group md:hidden">
+                                <button id="btn-capturar-imagen" class="w-full h-full bg-gray-800/50 hover:bg-gray-750 border-2 border-dashed border-gray-700 hover:border-yellow-400 rounded-2xl p-8 transition-all duration-300 group-hover:scale-105 group-hover:shadow-glow">
+                                    <div class="text-center">
+                                        <div class="w-20 h-20 bg-gradient-to-r from-yellow-400 to-yellow-300 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:animate-pulse">
+                                            <i class="fas fa-camera text-black text-3xl"></i>
+                                        </div>
+                                        <h3 class="text-2xl font-bold text-white mb-3">Capturar Foto</h3>
+                                        <p class="text-gray-400 text-lg">Cámara en tiempo real</p>
+                                        <p class="text-gray-500 text-sm mt-2">Dispositivos móviles</p>
+                                    </div>
+                                </button>
+                            </div>
+
+                            <!-- Arrastrar y soltar -->
+                            <div class="relative group">
+                                <div id="zona-arrastrar" class="w-full h-full bg-gray-800/50 hover:bg-gray-750 border-2 border-dashed border-gray-700 hover:border-yellow-400 rounded-2xl p-8 transition-all duration-300 group-hover:scale-105 group-hover:shadow-glow cursor-pointer">
+                                    <div class="text-center">
+                                        <div class="w-20 h-20 bg-gradient-to-r from-yellow-400 to-yellow-300 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:animate-pulse">
+                                            <i class="fas fa-mouse-pointer text-black text-3xl"></i>
+                                        </div>
+                                        <h3 class="text-2xl font-bold text-white mb-3">Arrastrar Aquí</h3>
+                                        <p class="text-gray-400 text-lg">Suelta tu imagen</p>
+                                        <p class="text-gray-500 text-sm mt-2">Drag & Drop</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Información del archivo mejorada -->
+                        <div id="info-archivo" class="hidden bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-6 border border-yellow-400/30 shadow-glow">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 bg-yellow-400 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-image text-black text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <p id="nombre-archivo" class="text-white font-bold text-lg"></p>
+                                        <div class="flex items-center space-x-4 mt-1">
+                                            <p id="tamano-archivo" class="text-gray-400"></p>
+                                            <p id="dimensiones-archivo" class="text-gray-400"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <button id="btn-analizar-imagen" class="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg transition-colors">
+                                        <i class="fas fa-search mr-2"></i>Analizar
+                                    </button>
+                                    <button id="btn-remover-imagen" class="text-red-400 hover:text-red-300 transition-colors text-xl">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Selector de modo mejorado -->
+                    <div class="mb-12">
+                        <label class="block text-3xl font-bold text-yellow-400 mb-8 flex items-center">
+                            <i class="fas fa-cogs mr-4 text-yellow-300"></i>
+                            Tecnología IA 2025
+                        </label>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                            <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700 hover:border-yellow-400 transition-all duration-300">
+                                <div class="flex items-start justify-between mb-6">
+                                    <div>
+                                        <h3 class="text-2xl font-bold text-white mb-2" id="titulo-modo">Eliminación de Fondo IA</h3>
+                                        <p id="descripcion-modo" class="text-gray-300 text-lg">
+                                            Elimina fondos de forma inteligente preservando objetos principales con precisión profesional.
+                                        </p>
+                                    </div>
+                                    <div class="w-12 h-12 bg-yellow-400 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-cut text-black text-xl"></i>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <span class="text-lg font-medium text-gray-300">Texto</span>
+                                        <div class="relative">
+                                            <input type="checkbox" id="toggle-modo" class="sr-only" checked>
+                                            <label for="toggle-modo" class="flex items-center cursor-pointer">
+                                                <div class="w-20 h-10 bg-gray-700 rounded-full transition-colors duration-300 relative">
+                                                    <div class="absolute top-1 left-1 w-8 h-8 bg-yellow-400 rounded-full transition-transform duration-300 transform toggle-knob shadow-lg"></div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <span class="text-lg font-medium text-gray-300">Fondo</span>
+                                    </div>
+                                    
+                                    <div class="text-right">
+                                        <div class="text-yellow-400 font-bold">PRO</div>
+                                        <div class="text-gray-400 text-sm">IA Avanzada</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Información de tecnología -->
+                            <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
+                                <h4 class="text-xl font-bold text-white mb-4 flex items-center">
+                                    <i class="fas fa-microchip text-yellow-400 mr-3"></i>
+                                    Motor IA 2025
+                                </h4>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-400">TensorFlow.js</span>
+                                        <span class="text-green-400 font-bold" id="status-tensorflow">Cargando...</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-400">WebGL Backend</span>
+                                        <span class="text-green-400 font-bold" id="status-webgl">Activado</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-400">Tesseract OCR</span>
+                                        <span class="text-green-400 font-bold" id="status-tesseract">Listo</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botón procesar mejorado -->
+                    <div class="mb-12 text-center">
+                        <button id="btn-procesar" class="relative bg-gradient-to-r from-yellow-500 to-yellow-400 hover:from-yellow-400 hover:to-yellow-300 text-black font-extrabold py-6 px-16 rounded-2xl transition-all duration-300 transform hover:scale-110 hover:shadow-glow disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none group text-2xl" disabled>
+                            <span id="texto-procesar" class="flex items-center justify-center">
+                                <i class="fas fa-bolt mr-3"></i>
+                                PROCESAR CON IA
+                            </span>
+                            <div id="cargando-procesar" class="hidden absolute inset-0 bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-2xl flex items-center justify-center">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 border-3 border-black border-t-transparent rounded-full animate-spin"></div>
+                                    <span class="font-extrabold text-lg">ANALIZANDO...</span>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Vista previa mejorada -->
+                    <div id="contenedor-preview" class="hidden">
+                        <h2 class="text-3xl font-bold text-yellow-400 mb-10 text-center flex items-center justify-center">
+                            <i class="fas fa-eye mr-4"></i>
+                            Resultados en Tiempo Real
+                        </h2>
+                        
+                        <div class="grid grid-cols-1 xl:grid-cols-2 gap-10 mb-12">
+                            <!-- Imagen original -->
+                            <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700 transform hover:scale-[1.02] transition-all duration-300">
+                                <h3 class="text-2xl font-bold text-white mb-6 text-center flex items-center justify-center">
+                                    <i class="fas fa-image mr-3 text-blue-400"></i>
+                                    Imagen Original
+                                </h3>
+                                <div class="relative aspect-square bg-gray-900 rounded-xl overflow-hidden border-2 border-gray-700 flex items-center justify-center">
+                                    <img id="preview-original" class="max-w-full max-h-full object-contain" alt="Imagen original">
+                                    <div id="placeholder-original" class="absolute inset-0 flex items-center justify-center text-gray-500 bg-gray-900">
+                                        <div class="text-center">
+                                            <i class="fas fa-image text-5xl mb-4"></i>
+                                            <p class="text-xl">Vista previa original</p>
+                                        </div>
+                                    </div>
+                                    <div id="analisis-original" class="absolute top-4 left-4 bg-black/80 text-white px-3 py-2 rounded-lg text-sm hidden">
+                                        <i class="fas fa-chart-bar mr-2"></i>
+                                        <span id="texto-analisis"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Resultado -->
+                            <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700 transform hover:scale-[1.02] transition-all duration-300">
+                                <h3 class="text-2xl font-bold text-white mb-6 text-center flex items-center justify-center">
+                                    <i class="fas fa-stars mr-3 text-green-400"></i>
+                                    Resultado IA 2025
+                                </h3>
+                                <div class="relative aspect-square bg-gray-900 rounded-xl overflow-hidden border-2 border-gray-700 flex items-center justify-center">
+                                    <canvas id="preview-resultado" class="max-w-full max-h-full object-contain"></canvas>
+                                    <div id="cargando-resultado" class="absolute inset-0 bg-gray-900/95 flex items-center justify-center hidden">
+                                        <div class="text-center">
+                                            <div class="w-16 h-16 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+                                            <p class="text-white text-xl font-bold mb-2">Procesando con IA...</p>
+                                            <p class="text-gray-400">Analizando patrones complejos</p>
+                                            <div class="mt-4 w-64 bg-gray-800 rounded-full h-2">
+                                                <div id="barra-progreso" class="bg-yellow-400 h-2 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="placeholder-resultado" class="absolute inset-0 flex items-center justify-center text-gray-500 bg-gray-900">
+                                        <div class="text-center">
+                                            <i class="fas fa-sparkles text-5xl mb-4"></i>
+                                            <p class="text-xl">Resultado aparecerá aquí</p>
+                                        </div>
+                                    </div>
+                                    <div id="estadisticas-resultado" class="absolute top-4 left-4 bg-black/80 text-white px-3 py-2 rounded-lg text-sm hidden">
+                                        <i class="fas fa-chart-pie mr-2"></i>
+                                        <span id="texto-estadisticas"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                            <button id="btn-descargar" class="bg-gradient-to-r from-green-500 to-green-400 hover:from-green-400 hover:to-green-300 text-white font-bold py-5 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-glow-green flex items-center justify-center text-xl group">
+                                <i class="fas fa-download mr-3 group-hover:animate-bounce"></i>
+                                Descargar Resultado
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información adicional mejorada -->
+        <div class="max-w-7xl mx-auto px-4 pb-20">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 border border-gray-800 transform hover:scale-105 transition-all duration-300 group hover:border-yellow-400">
+                    <div class="text-yellow-400 mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-brain text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">IA Multimodal 2025</h3>
+                    <p class="text-gray-300 leading-relaxed">Combina visión computacional y aprendizaje profundo para resultados precisos en cualquier escenario.</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 border border-gray-800 transform hover:scale-105 transition-all duration-300 group hover:border-yellow-400">
+                    <div class="text-yellow-400 mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-shield-alt text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Privacidad Total</h3>
+                    <p class="text-gray-300 leading-relaxed">Procesamiento 100% local. Tus imágenes nunca abandonan tu dispositivo.</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 border border-gray-800 transform hover:scale-105 transition-all duration-300 group hover:border-yellow-400">
+                    <div class="text-yellow-400 mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-bolt text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">WebGL Acelerado</h3>
+                    <p class="text-gray-300 leading-relaxed">Aceleración por GPU para procesamiento ultra rápido incluso en imágenes complejas.</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 border border-gray-800 transform hover:scale-105 transition-all duration-300 group hover:border-yellow-400">
+                    <div class="text-yellow-400 mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-infinity text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Escalable</h3>
+                    <p class="text-gray-300 leading-relaxed">Maneja desde selfies simples hasta imágenes profesionales con múltiples elementos.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="border-t border-gray-800 py-12 text-center bg-gradient-to-b from-transparent to-black">
+            <div class="max-w-6xl mx-auto px-4">
+                <div class="flex items-center justify-center mb-6">
+                    <div class="w-10 h-10 bg-yellow-400 rounded-xl flex items-center justify-center mr-4">
+                        <i class="fas fa-magic text-black text-xl"></i>
+                    </div>
+                    <p class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-300 bg-clip-text text-transparent">
+                        LuminaEdit
+                    </p>
+                </div>
+                <p class="text-gray-400 text-lg">
+                    Tecnología IA de última generación • Procesamiento en tiempo real • 
+                    <span class="text-yellow-400">100% Local</span>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+</body>
+</html>
