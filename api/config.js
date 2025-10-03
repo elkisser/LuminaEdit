@@ -1,21 +1,9 @@
 // Netlify Function para exponer la API key de forma segura
 exports.handler = async (event, context) => {
-    // Solo permitir requests desde el mismo dominio
-    const origin = event.headers.origin || event.headers.Origin;
-    const allowedOrigins = [
-        'https://luminaedit.netlify.app',
-        'https://elkisser-luminaedit.netlify.app',
-        'http://localhost:8888',
-        'http://localhost:8000'
-    ];
-
-    // En desarrollo, permitir cualquier origen
-    if (process.env.NODE_ENV !== 'production') {
-        allowedOrigins.push('*');
-    }
-
+    console.log('🔧 Config endpoint llamado:', event.httpMethod, event.path);
+    
     const headers = {
-        'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : allowedOrigins[0],
+        'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Allow-Methods': 'GET, OPTIONS',
         'Content-Type': 'application/json'
@@ -40,11 +28,16 @@ exports.handler = async (event, context) => {
     }
 
     try {
-        // Retornar la configuración (sin exponer la API key completa)
+        console.log('🔑 API Key disponible:', !!process.env.REMOVE_BG_API_KEY);
+        
+        // Retornar la configuración
         const config = {
             hasApiKey: !!process.env.REMOVE_BG_API_KEY,
-            apiKey: process.env.REMOVE_BG_API_KEY || null
+            apiKey: process.env.REMOVE_BG_API_KEY || null,
+            timestamp: new Date().toISOString()
         };
+
+        console.log('📤 Enviando configuración:', { hasApiKey: config.hasApiKey, timestamp: config.timestamp });
 
         return {
             statusCode: 200,
@@ -52,11 +45,11 @@ exports.handler = async (event, context) => {
             body: JSON.stringify(config)
         };
     } catch (error) {
-        console.error('Error en config endpoint:', error);
+        console.error('❌ Error en config endpoint:', error);
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ error: 'Internal server error' })
+            body: JSON.stringify({ error: 'Internal server error', details: error.message })
         };
     }
 };

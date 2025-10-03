@@ -1,8 +1,5 @@
 # Netlify redirects file
 # This file helps with SPA routing and API key handling
 
-# API endpoint for environment variables
-/api/config 200
-
-# SPA fallback
+# SPA fallback (excluir rutas de API)
 /*    /index.html   200
