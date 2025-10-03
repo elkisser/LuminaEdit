@@ -1,7 +1,7 @@
 [build]
-  # Netlify detectará automáticamente que es un sitio estático
-  # No necesitas configuración especial de build
-  functions = "api"
+  # Comando de build personalizado para configurar variables de entorno
+  command = "node build.js"
+  publish = "."
 
 [build.environment]
   # Variables de entorno que se usarán en el build

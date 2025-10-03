@@ -383,17 +383,9 @@ class LuminaEditEngine {
         // Convertir imagen a blob
         const blob = await this.convertirImagenABlob();
         
-        // Obtener API key desde el endpoint de Netlify
-        let apiKey;
-        try {
-            const configResponse = await fetch('/api/config');
-            const config = await configResponse.json();
-            apiKey = config.apiKey;
-            console.log('🔑 API key obtenida desde Netlify:', config.hasApiKey ? 'Sí' : 'No');
-        } catch (error) {
-            console.log('⚠️ Error obteniendo configuración, usando algoritmo local');
-            return null; // No usar API key hardcodeada
-        }
+        // Obtener API key desde la configuración
+        let apiKey = window.getApiKey();
+        console.log('🔑 API key disponible:', !!apiKey);
         
         if (!apiKey || apiKey === 'TU_API_KEY_AQUI') {
             console.log('⚠️ API key no configurada, usando algoritmo local');

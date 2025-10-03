@@ -1,8 +1,0 @@
-# Netlify redirects file
-# This file helps with SPA routing and API key handling
-
-# Excluir rutas de API del redirect
-/api/*  /api/:splat  200
-
-# SPA fallback para todas las demás rutas
-/*    /index.html   200
