@@ -119,7 +119,8 @@ exports.handler = async (event, context) => {
         }
 
         // Obtener la imagen procesada
-        const resultBuffer = await response.buffer();
+        const resultArrayBuffer = await response.arrayBuffer();
+        const resultBuffer = Buffer.from(resultArrayBuffer);
         const resultBase64 = resultBuffer.toString('base64');
         
         console.log('✅ Imagen procesada exitosamente');
