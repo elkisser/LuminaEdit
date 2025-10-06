@@ -91,8 +91,8 @@
                                 </button>
                             </div>
 
-                            <!-- Arrastrar y soltar -->
-                            <div class="relative group">
+                            <!-- Arrastrar y soltar (solo desktop) -->
+                            <div class="relative group hidden md:block">
                                 <div id="zona-arrastrar" class="w-full h-full bg-gray-800/50 hover:bg-gray-750 border-2 border-dashed border-gray-700 hover:border-yellow-400 rounded-2xl p-8 transition-all duration-300 group-hover:scale-105 group-hover:shadow-glow cursor-pointer">
                                     <div class="text-center">
                                         <div class="w-20 h-20 bg-gradient-to-r from-yellow-400 to-yellow-300 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:animate-pulse">
@@ -385,8 +385,19 @@
                     <!-- Separador -->
                     <span class="text-gray-600">•</span>
                     
+                    <!-- Email -->
+                    <a href="mailto:somos.env@gmail.com" 
+                       class="group flex items-center space-x-2 text-gray-400 hover:bg-gradient-to-r hover:from-red-500 hover:to-pink-500 hover:bg-clip-text hover:text-transparent transition-all duration-300">
+                        <i class="fas fa-envelope text-sm"></i>
+                        <span class="text-sm">Email</span>
+                        <i class="fas fa-external-link-alt text-xs opacity-50 group-hover:opacity-100 transition-opacity"></i>
+                    </a>
+                    
+                    <!-- Separador -->
+                    <span class="text-gray-600">•</span>
+                    
                     <!-- Portfolio -->
-                    <a href="https://elkisser.github.io" 
+                    <a href="https://portfolioskisser.netlify.app/" 
                        target="_blank" 
                        rel="noopener noreferrer"
                        class="group flex items-center space-x-2 text-gray-400 hover:bg-gradient-to-r hover:from-green-500 hover:to-emerald-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
@@ -394,23 +405,12 @@
                         <span class="text-sm">Portfolio</span>
                         <i class="fas fa-external-link-alt text-xs opacity-50 group-hover:opacity-100 transition-opacity"></i>
                     </a>
-                    
-                    <!-- Separador -->
-                    <span class="text-gray-600">•</span>
-                    
-                    <!-- Email -->
-                    <a href="mailto:contact@elkisser.dev" 
-                       class="group flex items-center space-x-2 text-gray-400 hover:bg-gradient-to-r hover:from-red-500 hover:to-pink-500 hover:bg-clip-text hover:text-transparent transition-all duration-300">
-                        <i class="fas fa-envelope text-sm"></i>
-                        <span class="text-sm">Email</span>
-                        <i class="fas fa-external-link-alt text-xs opacity-50 group-hover:opacity-100 transition-opacity"></i>
-                    </a>
                 </div>
                 
                 <!-- Copyright compacto -->
                 <div class="pt-4 border-t border-gray-800">
                     <p class="text-gray-500 text-xs">
-                        © 2024 LuminaEdit • Desarrollado con 
+                        © 2025 LuminaEdit • Desarrollado con 
                         <i class="fas fa-heart text-red-500 text-xs mx-1"></i>
                         por 
                         <span class="text-yellow-400 font-medium">Sebastián Kisser</span>
