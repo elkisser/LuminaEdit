@@ -19,8 +19,11 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Configuración de redirects (opcional)
+# Configuración de redirects para SPA
+# IMPORTANTE: Excluir funciones de Netlify del redirect
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+  # Excluir rutas que no deben ser redirigidas
+  except = ["/.netlify/*", "/api/*", "/*.js", "/*.css", "/*.png", "/*.jpg", "/*.jpeg", "/*.gif", "/*.svg", "/*.ico", "/*.woff", "/*.woff2", "/*.ttf", "/*.eot"]
