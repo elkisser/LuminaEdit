@@ -213,6 +213,33 @@
     }
 }
 
+/* Responsive avanzado */
+@media (max-width: 480px) {
+    .mobile-optimized {
+        padding: 1rem;
+    }
+    
+    .mobile-text-large {
+        font-size: 1.5rem;
+    }
+
+    .text-right {
+        display: none;
+    }
+
+    #status-tesseract {
+        text-align: right;
+    }
+    
+    .icono-tijeras {
+        display: none;
+    }
+
+    .icon-lumina {
+        display: none;
+    }
+}
+
 /* Modo de alto contraste para accesibilidad */
 @media (prefers-contrast: high) {
     .bg-gray-900 {
