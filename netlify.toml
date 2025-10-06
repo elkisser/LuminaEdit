@@ -5,7 +5,9 @@
 
 [build.environment]
   # Variables de entorno que se usarán en el build
-  # Estas se configuran en el dashboard de Netlify
+  # IMPORTANTE: Configura REMOVE_BG_API_KEY en el dashboard de Netlify
+  # Ve a Site settings > Environment variables y agrega:
+  # REMOVE_BG_API_KEY = tu_api_key_real_aqui
   REMOVE_BG_API_KEY = ""
 
 # Configuración de headers para seguridad

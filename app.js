@@ -380,45 +380,39 @@ class LuminaEditEngine {
     async procesarConAPIProfesional() {
         console.log('🚀 Usando API profesional de eliminación de fondo...');
         
-        // Convertir imagen a blob
-        const blob = await this.convertirImagenABlob();
-        
-        // Obtener API key desde la configuración
-        let apiKey = window.getApiKey();
-        console.log('🔑 API key disponible:', !!apiKey);
-        
-        if (!apiKey || apiKey === 'TU_API_KEY_AQUI') {
-            console.log('⚠️ API key no configurada, usando algoritmo local');
-            return null;
-        }
-        
-        const formData = new FormData();
-        formData.append('image_file', blob, 'imagen.png');
-        formData.append('size', 'auto');
+        // Convertir imagen a base64 para enviar a la función de Netlify
+        const imageData = await this.convertirImagenABase64();
         
         try {
-            console.log('📤 Enviando imagen a Remove.bg API...');
+            console.log('📤 Enviando imagen a función de Netlify...');
             
-            const response = await fetch('https://api.remove.bg/v1.0/removebg', {
+            const response = await fetch('/.netlify/functions/remove-bg', {
                 method: 'POST',
                 headers: {
-                    'X-Api-Key': apiKey,
+                    'Content-Type': 'application/json',
                 },
-                body: formData
+                body: JSON.stringify({
+                    imageData: imageData,
+                    options: {
+                        size: 'auto',
+                        format: 'png'
+                    }
+                })
             });
             
-            console.log('📥 Respuesta de API:', response.status, response.statusText);
+            console.log('📥 Respuesta de función:', response.status, response.statusText);
             
             if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Error de API:', errorText);
-                throw new Error(`API error: ${response.status} - ${errorText}`);
+                const errorData = await response.json();
+                console.error('Error de función:', errorData);
+                throw new Error(`Función error: ${response.status} - ${errorData.message || errorData.error}`);
             }
             
-            const resultBlob = await response.blob();
-            console.log('📦 Imagen procesada recibida, tamaño:', resultBlob.size, 'bytes');
+            const result = await response.json();
+            console.log('📦 Imagen procesada recibida, tamaño:', result.size, 'bytes');
             
-            const resultImage = await this.blobToImage(resultBlob);
+            // Convertir base64 a imagen
+            const resultImage = await this.base64ToImage(result.imageData);
             console.log('🖼️ Imagen convertida, dimensiones:', resultImage.width, 'x', resultImage.height);
             
             // Dibujar resultado en canvas
@@ -455,6 +449,29 @@ class LuminaEditEngine {
             const img = new Image();
             img.onload = () => resolve(img);
             img.src = URL.createObjectURL(blob);
+        });
+    }
+
+    async convertirImagenABase64() {
+        return new Promise((resolve) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = this.imagenOriginal.width;
+            canvas.height = this.imagenOriginal.height;
+            
+            ctx.drawImage(this.imagenOriginal, 0, 0);
+            
+            const base64 = canvas.toDataURL('image/jpeg', 0.9);
+            resolve(base64);
+        });
+    }
+
+    async base64ToImage(base64Data) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.src = base64Data;
         });
     }
 
