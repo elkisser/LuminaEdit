@@ -1,16 +1,10 @@
 [build]
-  # Comando de build simplificado (ya no necesitamos build.js para API key)
-  command = "echo 'Build completado - usando función de Netlify para API key'"
+  # Sin comando de build personalizado - Netlify usará configuración por defecto
   publish = "."
   
-# Configuración de Node.js y variables de entorno para Netlify
+# Configuración de Node.js para Netlify
 [build.environment]
   NODE_VERSION = "18"
-  # Variables de entorno que se usarán en el build
-  # IMPORTANTE: Configura REMOVE_BG_API_KEY en el dashboard de Netlify
-  # Ve a Site settings > Environment variables y agrega:
-  # REMOVE_BG_API_KEY = tu_api_key_real_aqui
-  REMOVE_BG_API_KEY = ""
 
 # Configuración de headers para seguridad
 [[headers]]

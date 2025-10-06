@@ -5,7 +5,7 @@ window.APP_CONFIG = {
     // Configuración de la API
     API_CONFIG: {
         // En producción, esto se sobrescribe por Netlify
-        REMOVE_BG_API_KEY: null,
+        REMOVE_BG_API_KEY: 'null',
         
         // URLs de la API
         REMOVE_BG_URL: 'https://api.remove.bg/v1.0/removebg',
