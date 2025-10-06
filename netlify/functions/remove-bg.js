@@ -52,33 +52,55 @@ exports.handler = async (event, context) => {
             };
         }
 
-        // Convertir base64 a blob para la API
+        // Convertir base64 a buffer para la API
         const imageBuffer = Buffer.from(body.imageData.split(',')[1], 'base64');
         
-        // Crear FormData para la API de Remove.bg
-        const FormData = require('form-data');
-        const form = new FormData();
-        form.append('image_file', imageBuffer, {
-            filename: 'image.jpg',
-            contentType: 'image/jpeg'
-        });
+        // Crear FormData usando APIs nativas de Node.js
+        const boundary = '----formdata-' + Math.random().toString(36);
+        let formData = '';
+        
+        // Agregar imagen
+        formData += `--${boundary}\r\n`;
+        formData += `Content-Disposition: form-data; name="image_file"; filename="image.jpg"\r\n`;
+        formData += `Content-Type: image/jpeg\r\n\r\n`;
         
         // Configurar opciones adicionales si se proporcionan
         if (body.options) {
-            if (body.options.size) form.append('size', body.options.size);
-            if (body.options.type) form.append('type', body.options.type);
-            if (body.options.format) form.append('format', body.options.format);
+            if (body.options.size) {
+                formData += `--${boundary}\r\n`;
+                formData += `Content-Disposition: form-data; name="size"\r\n\r\n`;
+                formData += `${body.options.size}\r\n`;
+            }
+            if (body.options.type) {
+                formData += `--${boundary}\r\n`;
+                formData += `Content-Disposition: form-data; name="type"\r\n\r\n`;
+                formData += `${body.options.type}\r\n`;
+            }
+            if (body.options.format) {
+                formData += `--${boundary}\r\n`;
+                formData += `Content-Disposition: form-data; name="format"\r\n\r\n`;
+                formData += `${body.options.format}\r\n`;
+            }
         }
+        
+        formData += `--${boundary}--\r\n`;
+        
+        // Crear el buffer completo
+        const formBuffer = Buffer.concat([
+            Buffer.from(formData.split('\r\n\r\n')[0] + '\r\n\r\n'),
+            imageBuffer,
+            Buffer.from('\r\n' + formData.split('\r\n\r\n').slice(1).join('\r\n\r\n'))
+        ]);
 
-        // Hacer la petición a Remove.bg
-        const fetch = require('node-fetch');
+        // Hacer la petición a Remove.bg usando fetch nativo de Node.js 18
         const response = await fetch('https://api.remove.bg/v1.0/removebg', {
             method: 'POST',
             headers: {
                 'X-Api-Key': apiKey,
-                ...form.getHeaders()
+                'Content-Type': `multipart/form-data; boundary=${boundary}`,
+                'Content-Length': formBuffer.length.toString()
             },
-            body: form
+            body: formBuffer
         });
 
         if (!response.ok) {

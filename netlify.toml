@@ -1,10 +1,5 @@
 [build]
-  # Sin comando de build personalizado - Netlify usará configuración por defecto
   publish = "."
-  
-# Configuración de Node.js para Netlify
-[build.environment]
-  NODE_VERSION = "18"
 
 # Configuración de headers para seguridad
 [[headers]]
